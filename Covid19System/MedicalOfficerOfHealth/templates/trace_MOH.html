@@ -1,0 +1,112 @@
+{% load static %}
+
+<!DOCTYPE html>
+<!-- Created by CodingLab |www.youtube.com/CodingLabYT-->
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <!--<title> Drop Down Sidebar Menu | CodingLab </title>-->
+    <link rel="stylesheet" href="{% static 'css/search_covid_cert_style.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous"/>
+    <!-- Boxiocns CDN Link -->
+    <script src="{% static 'MOH_script.js'%}"></script>
+  </head>
+  <body>
+
+    <nav>
+      <div class="logo">
+        <h4>Covid System</h4>
+      </div>
+      <div class="nav-links">
+        <button class="home-button" onclick="home()"><i class="fas fa-home" style="margin-right: 7px;"></i>Trang chủ</button>
+        <button class="button" onclick="about()">Thông tin</button>
+        <button class="login-button" onclick="signout()">Đăng xuất</button>
+      </div>
+    </nav>
+
+    <main>
+      <div class="form-container">
+        <h3>Thông tin dịch tễ</h3>
+        <div class="search_form">
+            <form action="" method="post" id="id_form">
+            {% csrf_token %}
+                <input name='target' type='text' Required value={{target}}>
+                <input id="search" type="submit" class="button" name="search" value="Tìm kiếm">
+                <div class="filter">
+                    <label for="province" class="label">Tỉnh thành </label>
+                    {{ form.province }}
+                    <label for="arrival_province" class="label">Nơi đi qua</label>
+                    {{ form.arrival_province }}
+                </div>
+            </form>
+        </div>
+        <br>
+        <hr>
+        <div class="search_results">
+            {% if page.paginator.count %}
+            <table>
+                <tr class="table-title">
+                    <th>Số CMND/CCCD</th>
+                    <th>Tên người khai báo</th>
+                    <th>Nơi ở</th>
+                    <th>Thời gian khai báo</th>
+                    <th>Nơi đi qua</th>
+                    <th>Thông tin chi tiết</th>
+                </tr>
+                {% for record in page %}
+                    <tr class="table-content">
+                        <th>{{ record.id_card }}</th>
+                        <th>{{ record.full_name }}</th>
+                        <th>{{ record.province }}</th>
+                        <th>{{ record.declarationTime }}</th>
+                        <th>{{ record.arrival_province }}</th>
+                        <th><a href="/MOH/trace/{{ record.id }}">More info</th>
+                    </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <p class="error">Không tồn tại khai báo y tế nào</p>
+            {% endif %} 
+        </table>
+        <div class="pagination">
+          <span class="step-links">
+              {% if page.has_previous %}
+              <button><a href="?page=1"><i class="fas fa-backward"></i></a></button>
+              <button><a href="?page={{ page.previous_page_number }}"><i class="fas fa-caret-left"></i></a></button>
+              {% endif %}
+      
+              <span class="current">
+                Page {{ page.number }} of {{ page.paginator.num_pages }}.
+              </span>
+      
+              {% if page.has_next %}
+              <button><a href="?page={{ page.next_page_number }}"><i class="fas fa-caret-right"></i></a></button>
+              <button><a href="?page={{ page.paginator.num_pages }}"><i class="fas fa-forward"></i></a></button>
+              {% endif %}
+          </span>
+        </div>
+        </div>
+      </div>
+    </main>
+    
+    <div class="planet Earth">
+      <div class="container">
+        <div class="loader"><span></span></div>
+        <div class="earth"></div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        $("#id_province").change(function () {
+            console.log("change detected");
+            $("#id_form").submit();
+        });
+    </script>
+    <script>
+        $("#id_arrival_province").change(function () {
+            console.log("change detected");
+            $("#id_form").submit();
+        });
+    </script>
+  </body>
+</html>
